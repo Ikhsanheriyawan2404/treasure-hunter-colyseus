@@ -31,14 +31,14 @@ export class Player extends Schema {
     //     this.position.long = position.long;
     // }
 
-    createPlayer(id: number, name: string, email: string, armor: number, speed: number, health: number, position: Position) {
+    createPlayer(id: number, options: any) {
         this.id = id;
-        this.name = name;
-        this.armor = armor;
-        this.email = email;
-        this.speed = speed;
-        this.health = health;
-        this.position.lat = position.lat;
-        this.position.long = position.long;
+        this.name = options.name;
+        this.armor = options.armor;
+        this.email = options.email;
+        this.speed = options.speed;
+        this.health = options.health;
+        this.position.lat = options.position.lat;
+        this.position.long = options.position.long;
     }
 }

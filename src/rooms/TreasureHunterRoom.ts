@@ -2,8 +2,8 @@ import { Room, Client } from "@colyseus/core";
 import { TreasureHunterState, World } from "./states/TreasureHunterState";
 import { Player } from "./schema/Player";
 import { Circle } from "./schema/Circle";
-import { Poly, IPoly } from "./schema/Poly";
 import { ObjectMap } from "./schema/ObjectMap";
+import { Message } from "./schema/Message";
 
 export class TreasureHunterRoom extends Room<TreasureHunterState> {
   maxClients = 4;
@@ -19,111 +19,37 @@ export class TreasureHunterRoom extends Room<TreasureHunterState> {
     }));
     
     this.state.world = world;
+    
+    // Generate random object map
+    const objects = new ObjectMap();
+    const allobjects = objects.setRandomObjectMap();
 
-    /**
-    * Generate data random for object on maps
-    * [Items, Enemies, Obstacles]
-    */
-   let properties: string;
-    for (let i = 0; i < 100; i++) {
-      let types = ['items', 'explosion', 'wall', 'weather'];
-      // type random
-      let randomType = types[Math.floor(Math.random() * types.length)];
+    allobjects.forEach((object) => {
+      this.state.ObjectMap.set(object.id, object);
+    });
 
-      if (randomType === 'items') {
-        properties = JSON.stringify(Object.assign(new Circle(), {
-          lat: Math.floor(Math.random() * 100),
-          long: Math.floor(Math.random() * 100),
-          radius: Math.floor(Math.random() * 100),
-          speed: Math.floor(Math.random() * 100),
-          health: Math.floor(Math.random() * 100),
-          armor: 0,
-        }))
-      } else if (randomType === 'explosion') {
-        properties = JSON.stringify(Object.assign(new Circle(), {
-          lat: Math.floor(Math.random() * 100),
-          long: Math.floor(Math.random() * 100),
-          radius: Math.floor(Math.random() * 100),
-        }))
-      } else if (randomType === 'wall') {
-        // random polygon
-        let minPoints = 1; // Jumlah titik minimum
-        let maxPoints = 5; // Jumlah titik maksimum
-
-        let numPoints = Math.floor(Math.random() * (maxPoints - minPoints + 1)) + minPoints;
-
-        let poly: Array<IPoly> = []; // Array untuk menyimpan titik-titik poligon
-
-        for (let i = 0; i < numPoints; i++) {
-          let point = {
-            lat: Math.floor(Math.random() * 100),
-            lng: Math.floor(Math.random() * 100),
-          };
-
-          poly.push([point.lat, point.lng]);
-        }
-
-        properties = JSON.stringify(Object.assign(new Poly(), {
-          type: 'polyline',
-          poly: poly,
-        }));
-      } else if (randomType === 'weather') {
-        // random polygon
-        let minPoints = 1; // Jumlah titik minimum
-        let maxPoints = 5; // Jumlah titik maksimum
-
-        let numPoints = Math.floor(Math.random() * (maxPoints - minPoints + 1)) + minPoints;
-
-        let poly: Array<IPoly> = []; // Array untuk menyimpan titik-titik poligon
-
-        for (let i = 0; i < numPoints; i++) {
-          let point = {
-            lat: Math.floor(Math.random() * 100),
-            lng: Math.floor(Math.random() * 100),
-          };
-
-          poly.push([point.lat, point.lng]);
-        }
-
-        properties = JSON.stringify(Object.assign(new Poly(), {
-          type: 'polygon',
-          poly: poly,
-        }));
-      }
-
-      let id = Math.floor(Math.random() * 100).toString();
-      this.state.ObjectMap.set(id, Object.assign(new ObjectMap(), {
-        // create random id
-        id: id,
-        type: randomType,
-        is_active: true,
-        properties: properties,
-      }));
-    }
-
-    this.onMessage("type", (client, message) => {
-      //
-      // handle "type" message
-      //
+    this.onMessage("send_message", (client, data) => {
+      const message = new Message();
+      message.createMessage(data.message_id, data);
+      this.state.Message.set(data.message_id, message);
     });
 
     this.onMessage("move", (client, data) => {
+      const player = this.state.Player.get(data.player_id);
+      player.position.lat = data.position.lat;
+      player.position.long = data.position.long;
+    });
+
+    this.onMessage("plot_object", (client, data) => {
+      //
     });
   }
 
   onJoin (client: Client, options: any) {
     
     const player = new Player();
-    player.createPlayer(
-      options.id,
-      options.name,
-      options.email,
-      options.armor,
-      options.speed,
-      options.health,
-      options.position
-    );
-    this.state.world.countEntity += 1;
+    player.createPlayer(options.id, options);
+    this.state.world.countPlayer += 1;
 
     this.state.Player.set(options.id.toString(), player);
 
