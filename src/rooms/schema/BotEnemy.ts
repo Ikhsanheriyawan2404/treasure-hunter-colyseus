@@ -12,6 +12,4 @@ export class BotEnemy extends Schema {
 
     public minPoint: number;
     public maxPoint: number;
-
-    
 }

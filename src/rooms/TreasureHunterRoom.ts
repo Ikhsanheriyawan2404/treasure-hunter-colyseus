@@ -11,22 +11,28 @@ export class TreasureHunterRoom extends Room<TreasureHunterState> {
   onCreate (options: any) {
     this.setState(new TreasureHunterState());
 
+    // Generate informasi world
     const world = new World();
     world.create('2020-12-12', 'https://www.youtube.com/watch?v=5qap5aO4i9A', Object.assign(new Circle(), {
       lat: 0,
       long: 0,
       radius: 0,
     }));
-    
+    // tambahkan pada state
     this.state.world = world;
     
-    // Generate random object map
+    // Generate random object di map
     const objects = new ObjectMap();
-    const allobjects = objects.setRandomObjectMap();
-
-    allobjects.forEach((object) => {
+    const allObject: Array<any> = objects.setRandomObjectMap();
+    // put semua data object di state
+    allObject.forEach((object) => {
       this.state.ObjectMap.set(object.id, object);
+      this.state.world.countItem += 1;
     });
+
+    //==========================================================================
+    // All event handler to update state
+    //==========================================================================
 
     this.onMessage("send_message", (client, data) => {
       const message = new Message();
@@ -46,7 +52,7 @@ export class TreasureHunterRoom extends Room<TreasureHunterState> {
   }
 
   onJoin (client: Client, options: any) {
-    
+    // Generate player baru
     const player = new Player();
     player.createPlayer(options.id, options);
     this.state.world.countPlayer += 1;
@@ -57,7 +63,7 @@ export class TreasureHunterRoom extends Room<TreasureHunterState> {
 
     this.broadcast('onJoin', {
       id: client.sessionId,
-      message: 'halo',
+      message: 'Halo selamat datang di Game Treasure Hunter!',
     });
   }
 

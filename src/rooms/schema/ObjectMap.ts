@@ -23,15 +23,11 @@ export class ObjectMap extends Schema {
     }
 
     /*
-    * Generate data random for object on maps
-    * [Items, Enemies, Obstacles]
-    * return Array<[]> 
+    * Generate data object random di maps
+    * type object [Item, Explosion, Wall, Weather]
+    * @return Array<[any]> 
     **/
     public setRandomObjectMap() {
-        /**
-        * Generate data random for object on maps
-        * [Items, Enemies, Obstacles]
-        */
         let data: Array<any> = []; 
         let properties: string;
         let minPoint = this.minPoint;

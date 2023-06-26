@@ -25,6 +25,7 @@ export class World extends Schema {
     this.treasure.radius = circle.radius;
   }
 }
+
 export class TreasureHunterState extends Schema {
 
   @type("string") mySynchronizedProperty: string = "Hello world";
