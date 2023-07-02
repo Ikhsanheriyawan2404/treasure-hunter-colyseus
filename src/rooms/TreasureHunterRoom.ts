@@ -36,8 +36,10 @@ export class TreasureHunterRoom extends Room<TreasureHunterState> {
 
     this.onMessage("send_message", (client, data) => {
       const message = new Message();
+      console.log(`${data.player_name} kriim pesan berupa : ${data.message}`)
       message.createMessage(data.message_id, data);
-      this.state.Message.set(data.message_id, message);
+      this.state.Message.set(message.message_id, message);
+      this.state.createPlayer(options.id, options);
     });
 
     this.onMessage("move", (client, data) => {
@@ -53,11 +55,8 @@ export class TreasureHunterRoom extends Room<TreasureHunterState> {
 
   onJoin (client: Client, options: any) {
     // Generate player baru
-    const player = new Player();
-    player.createPlayer(options.id, options);
+    this.state.createPlayer(client.sessionId, options);
     this.state.world.countPlayer += 1;
-
-    this.state.Player.set(options.id.toString(), player);
 
     console.log(client.sessionId, "joined!");
 
@@ -68,10 +67,13 @@ export class TreasureHunterRoom extends Room<TreasureHunterState> {
   }
 
   onLeave (client: Client, consented: boolean) {
+    this.state.removePlayer(client.sessionId);
+    this.broadcast('onLeave', client.sessionId);
     console.log(client.sessionId, "left!");
   }
 
   onDispose() {
+    this.broadcast('onDispose');
     console.log("room", this.roomId, "disposing...");
   }
 

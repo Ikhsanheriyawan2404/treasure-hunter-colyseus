@@ -34,6 +34,9 @@ export class TreasureHunterState extends Schema {
 
   @type({ map: Player })
   Player = new MapSchema<Player>();
+  
+  @type({ map: Message })
+  Message = new MapSchema<Message>();
 
   @type({ map: ObjectMap })
   ObjectMap = new MapSchema<ObjectMap>();
@@ -41,9 +44,20 @@ export class TreasureHunterState extends Schema {
   @type({ map: LogActivity })
   LogActivity = new MapSchema<LogActivity>();
 
-  @type({ map: Message })
-  Message = new MapSchema<Message>();
-
   @type({ map: BotEnemy })
   BotEnemy = new MapSchema<BotEnemy>();
+
+  createPlayer (id: string, options: any) {
+    const player = new Player();
+    player.createPlayer(id, options);
+    this.Player.set(options.id, player);
+  }
+
+  removePlayer (id: string) {
+    this.Player.forEach((player, key) => {
+      if(player.id === id){
+        this.Player.delete(key);
+      }
+  })
+  }
 }

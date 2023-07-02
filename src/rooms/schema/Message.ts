@@ -3,7 +3,7 @@ import { Schema, type } from '@colyseus/schema';
 export class Message extends Schema {
     @type('string') message_id !: string;
     @type('string') type !: string;
-    @type('number') player_id !: number;
+    @type('string') player_id !: string;
     @type('string') player_name !: string;
     @type('string') message !: string;
     @type('string') time !: string;

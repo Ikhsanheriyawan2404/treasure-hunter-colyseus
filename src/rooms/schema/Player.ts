@@ -2,9 +2,9 @@ import { Schema, type, MapSchema, CollectionSchema } from "@colyseus/schema";
 import { Position } from "./Position";
 
 export class Player extends Schema {
-    @type('number') id !: number;
+    @type('string') id !: string;
     @type('string') name !: string;
-    @type('string') email !: string;
+    @type('string') email ?: string;
     @type('number') armor : number = 0;
     @type('number') speed : number = 0;
     @type('number') health : number = 0;
@@ -31,7 +31,7 @@ export class Player extends Schema {
     //     this.position.long = position.long;
     // }
 
-    createPlayer(id: number, options: any) {
+    createPlayer(id: string, options: any) {
         this.id = id;
         this.name = options.name;
         this.armor = options.armor;
@@ -41,4 +41,18 @@ export class Player extends Schema {
         this.position.lat = options.position.lat;
         this.position.long = options.position.long;
     }
+
+    movePlayer(position: Position) {
+        this.position.lat = position.lat;
+        this.position.long = position.long;
+    }
+
+    plotObject() {
+        //
+    }
+
+    attack() {
+        //
+    }
+
 }
