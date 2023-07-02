@@ -1,6 +1,5 @@
 import { Room, Client } from "@colyseus/core";
 import { TreasureHunterState, World } from "./states/TreasureHunterState";
-import { Player } from "./schema/Player";
 import { Circle } from "./schema/Circle";
 import { ObjectMap } from "./schema/ObjectMap";
 import { Message } from "./schema/Message";
@@ -39,13 +38,16 @@ export class TreasureHunterRoom extends Room<TreasureHunterState> {
       console.log(`${data.player_name} kriim pesan berupa : ${data.message}`)
       message.createMessage(data.message_id, data);
       this.state.Message.set(message.message_id, message);
-      this.state.createPlayer(options.id, options);
+
+      this.broadcast('send_message', data);
     });
 
     this.onMessage("move", (client, data) => {
       const player = this.state.Player.get(data.player_id);
       player.position.lat = data.position.lat;
       player.position.long = data.position.long;
+
+      this.broadcast('move', data);
     });
 
     this.onMessage("plot_object", (client, data) => {
