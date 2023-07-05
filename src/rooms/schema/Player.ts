@@ -41,11 +41,8 @@ export class Player extends Schema {
         this.id = id;
         this.name = options.name;
         this.email = options.email;
-        this.speed = 0;
-        this.armor = 0;
-        this.health = 100;
-        this.position.lat = this.getRandomInRange(Math.min(...latitudes), Math.max(...latitudes));
-        this.position.long = this.getRandomInRange(Math.min(...longitudes), Math.max(...longitudes));
+        this.position.lat = this.position.lat;
+        this.position.long = this.position.long;
     }
 
     movePlayer(position: Position) {
