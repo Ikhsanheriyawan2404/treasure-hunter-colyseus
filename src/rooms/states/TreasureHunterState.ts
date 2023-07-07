@@ -51,13 +51,23 @@ export class TreasureHunterState extends Schema {
     const player = new Player();
     player.createPlayer(id, options);
     this.Player.set(options.id, player);
+    return player;
+  }
+
+  getPlayer (id: string) {
+    this.Player.forEach((player, key) => {
+      if (player.id === id) {
+        return this.Player.get(key);
+      }
+    })
   }
 
   removePlayer (id: string) {
     this.Player.forEach((player, key) => {
-      if(player.id === id){
+      if (player.id === id) {
         this.Player.delete(key);
+        return player;
       }
-  })
+    })
   }
 }

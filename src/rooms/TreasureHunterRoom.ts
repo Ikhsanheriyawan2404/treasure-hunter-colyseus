@@ -57,21 +57,23 @@ export class TreasureHunterRoom extends Room<TreasureHunterState> {
 
   onJoin (client: Client, options: any) {
     // Generate player baru
-    this.state.createPlayer(client.sessionId, options);
+    const player = this.state.createPlayer(client.sessionId, options);
     this.state.world.countPlayer += 1;
-
+    
     console.log(client.sessionId, "joined!");
-
+    // console.log(this.state.getPlayer(client.sessionId));
     this.broadcast('onJoin', {
       id: client.sessionId,
+      player: player,
       message: 'Halo selamat datang di Game Treasure Hunter!',
     });
   }
 
   onLeave (client: Client, consented: boolean) {
-    this.state.removePlayer(client.sessionId);
+    let player = this.state.removePlayer(client.sessionId);
     this.broadcast('onLeave', client.sessionId);
     console.log(client.sessionId, "left!");
+    console.log(player)
   }
 
   onDispose() {
