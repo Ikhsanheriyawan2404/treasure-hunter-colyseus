@@ -1,6 +1,7 @@
 import { Schema, type } from "@colyseus/schema";
 import { Position } from "./Position";
 import { Bound } from "./Bounds";
+import axios from "axios";
 
 export class Player extends Schema {
     @type('string') id !: string;
@@ -37,13 +38,28 @@ export class Player extends Schema {
         const coordinates = geoJSON.geometry.coordinates[0];
         const latitudes = coordinates.map(coord => coord[1]);
         const longitudes = coordinates.map(coord => coord[0]);
+        let iteration = 1;
 
-        this.id = id;
-        this.name = options.name;
-        this.email = options.email;
-        this.health = 100;
-        this.position.lat = this.getRandomInRange(Math.min(...latitudes), Math.max(...latitudes));
-        this.position.long = this.getRandomInRange(Math.min(...longitudes), Math.max(...longitudes));
+        let newLat, newLng;
+        newLat = this.getRandomInRange(Math.min(...latitudes), Math.max(...latitudes));
+        newLng = this.getRandomInRange(Math.min(...longitudes), Math.max(...longitudes));
+        let result = this.checkLayerType(newLat, newLng);
+        // while (result != 'land') {
+           
+        //     result = this.checkLayerType(newLat, newLng);
+        //     console.log(`Iteration ${iteration}: ${result}`);
+        //     iteration++;
+        // }
+        
+        // if (result === 'land') { 
+            this.id = id;
+            this.name = options.name;
+            this.email = options.email;
+            this.health = 100;
+            this.position.lat = newLat;
+            this.position.long = newLng;
+        // }
+
     }
 
     movePlayer(position: Position) {
@@ -74,10 +90,40 @@ export class Player extends Schema {
 
     // Fungsi untuk mendapatkan random number di antara dua nilai
     getRandomInRange(min: number, max: number) {
-
         return Math.random() * (max - min) + min;
     }
 
+    checkLayerType(lat: number, lng: number): any {
+        // Buat URL Overpass API dengan kueri untuk memeriksa jenis lapisan di titik tersebut
+        var url = `https://overpass-api.de/api/interpreter?data=[out:json];(node(around:1,${lat},${lng});way(around:1,${lat},${lng});relation(around:1,${lat},${lng}););out;`;
+      
+        // Panggil API dengan menggunakan Axios
+        axios.get(url).then(function(response) {
+            var data = response.data;
+      
+            // Cek jenis lapisan yang ditemukan
+            if (data.elements.length > 0) {
+                var firstElement = data.elements[0];
+                var layerType = firstElement.type; // Jenis lapisan (node, way, relation)
+                
+                // Lakukan sesuatu berdasarkan jenis lapisan yang ditemukan
+                if (layerType === 'node' || layerType === 'way') {
+                    return 'land';
+                } else if (layerType === 'relation') {
+                    return 'water';
+                } else {
+                    return 'unknown';
+                }
+            } else {
+                console.log('Tidak ada data yang ditemukan di titik tersebut');
+                return 'not found';
+            }
+        })
+        .catch(function(error) {
+            console.log('Error:', error);
+        });
+    }
+      
     plotObject() {
         //
     }
