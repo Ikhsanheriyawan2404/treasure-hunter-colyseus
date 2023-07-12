@@ -1,7 +1,7 @@
 import { Schema, type } from "@colyseus/schema";
 import { Circle } from "./Circle";
 import { Poly } from "./Poly";
-
+import { Bound } from "./Bounds";
 
 export class ObjectMap extends Schema {
 
@@ -12,14 +12,16 @@ export class ObjectMap extends Schema {
 
     private minPoint = 1; // Jumlah point/titik di maps
     private maxPoint = 5; // Jumlah point/titik di maps
-    private totalDataRand = 100; // Jumlah point/titik di maps
+    private totalDataRand = 1000; // Jumlah point/titik di maps
     private typeObject = ['item', 'explosion', 'wall', 'weather'];
+    private Boundary = new Bound();
 
     public createObjectMap(id: string, options: any) {
         this.id = id;
         this.type = options.type;
         this.is_active = options.is_active;
         this.properties = options.properties;
+
     }
 
     /*
@@ -40,12 +42,21 @@ export class ObjectMap extends Schema {
             let numPoints = Math.floor(Math.random() * (maxPoint - minPoint + 1)) + minPoint;
             let poly: Array<any>;
 
+            const geoJSON = this.Boundary.getRandomPositionByPolygon(this.Boundary.JakartaBounds);
+            const coordinates = geoJSON.geometry.coordinates[0];
+            const latitudes = coordinates.map(coord => coord[1]);
+            const longitudes = coordinates.map(coord => coord[0]);
+
+            let newLat, newLng;
+            newLat = this.Boundary.getRandomInRange(Math.min(...latitudes), Math.max(...latitudes));
+            newLng = this.Boundary.getRandomInRange(Math.min(...longitudes), Math.max(...longitudes));
+
             switch (randomType) {
                 case "item":
                     properties = JSON.stringify(Object.assign(new Circle(), {
-                        lat: Math.floor(Math.random() * 100),
-                        long: Math.floor(Math.random() * 100),
-                        radius: Math.floor(Math.random() * 100),
+                        lat: newLat,
+                        long: newLng,
+                        radius: Math.floor(Math.random() * 1000),
                         speed: Math.floor(Math.random() * 100),
                         health: Math.floor(Math.random() * 100),
                         armor: 0,
@@ -53,22 +64,19 @@ export class ObjectMap extends Schema {
                     break;
                 case "explosion":
                     properties = JSON.stringify(Object.assign(new Circle(), {
-                        lat: Math.floor(Math.random() * 100),
-                        long: Math.floor(Math.random() * 100),
-                        radius: Math.floor(Math.random() * 100),
+                        lat: newLat,
+                        long: newLng,
+                        radius: Math.floor(Math.random() * 1000),
                     }))
                     break;
                 case "wall":
 
                     poly = [];
-                    for (let i = 0; i < numPoints; i++) {
-                        let point = {
-                        lat: Math.floor(Math.random() * 100),
-                        lng: Math.floor(Math.random() * 100),
-                        };
 
-                        poly.push([point.lat, point.lng]);
-                    }
+                    poly = this.Boundary.createRandomPolyline({
+                        lat: this.Boundary.getRandomInRange(Math.min(...latitudes), Math.max(...latitudes)),
+                        lng: this.Boundary.getRandomInRange(Math.min(...longitudes), Math.max(...longitudes)),
+                    }, numPoints, 1_000);
 
                     properties = JSON.stringify(Object.assign(new Poly(), {
                         type: 'polyline',
@@ -76,15 +84,12 @@ export class ObjectMap extends Schema {
                     }));
                     break;
                 case "weather":
-                    poly= [];
-                    for (let i = 0; i < numPoints; i++) {
-                        let point = {
-                        lat: Math.floor(Math.random() * 100),
-                        lng: Math.floor(Math.random() * 100),
-                        };
+                    poly = [];
 
-                        poly.push([point.lat, point.lng]);
-                    }
+                    poly = this.Boundary.createRandomPolygon({
+                        lat: this.Boundary.getRandomInRange(Math.min(...latitudes), Math.max(...latitudes)),
+                        lng: this.Boundary.getRandomInRange(Math.min(...longitudes), Math.max(...longitudes)),
+                    }, numPoints, 1_000);
 
                     properties = JSON.stringify(Object.assign(new Poly(), {
                         type: 'polygon',
@@ -96,7 +101,7 @@ export class ObjectMap extends Schema {
                     break;
             }
 
-            let id = Math.floor(Math.random() * 100);
+            let id = i + 1;
             let row: ObjectMap = new ObjectMap();
             row.id = id.toString();
             row.type = randomType;
