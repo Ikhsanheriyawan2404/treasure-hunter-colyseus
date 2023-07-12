@@ -3,6 +3,7 @@ import { TreasureHunterState, World } from "./states/TreasureHunterState";
 import { Circle } from "./schema/Circle";
 import { ObjectMap } from "./schema/ObjectMap";
 import { Message } from "./schema/Message";
+import { BotEnemy } from "./schema/BotEnemy";
 
 export class TreasureHunterRoom extends Room<TreasureHunterState> {
   maxClients = 4;
@@ -27,6 +28,14 @@ export class TreasureHunterRoom extends Room<TreasureHunterState> {
     allObject.forEach((object) => {
       this.state.ObjectMap.set(object.id, object);
       this.state.world.countItem += 1;
+    });
+
+    // Generate enemy bot
+    const Bot = new BotEnemy();
+    const enemies: Array<any> = Bot.setBot();
+    // put semua data object di state
+    enemies.forEach((item) => {
+      this.state.BotEnemy.set(item.id, item);
     });
 
     //==========================================================================
