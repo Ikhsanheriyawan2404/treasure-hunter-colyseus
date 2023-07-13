@@ -1,24 +1,24 @@
 import { Schema, type, MapSchema, CollectionSchema } from "@colyseus/schema";
 import { Position } from "./Position";
-import { Poly } from "./Poly";
+import { Poly, IPoly } from "./Poly";
 import { Bound } from "./Bounds";
 
 export class BotEnemy extends Schema {
-    @type('number') id !: number;
+    @type('string') id !: string;
     @type('string') name !: string;
     @type('number') speed : number = 0;
     @type('number') health : number = 0;
     @type(Position) position = new Position();
     @type(Poly) movement = new Poly();
 
-    private minPoint: number;
-    private maxPoint: number;
-    private totalDataRand = 100;
+    private minPoint = 10;
+    private maxPoint = 15;
+    private totalDataRand = 1000;
     private Boundary = new Bound();
 
     public createBotEnemy(objects: any) {
         this.id = objects.id;
-        this.name = 'wakwau';
+        this.name = objects.name;
         this.speed = objects.speed;
         this.health = 100;
         this.position.lat = objects.position.lat;
@@ -26,11 +26,9 @@ export class BotEnemy extends Schema {
         this.movement = objects.movement;
     }
 
-    setBot() {
+    public setBot() {
         let data: Array<any> = []; 
         // let properties: string;
-        this.minPoint = 0;
-        this.maxPoint = 15;
 
         for (let i = 0; i < this.totalDataRand; i++) {
             // type random
@@ -42,27 +40,39 @@ export class BotEnemy extends Schema {
             const latitudes = coordinates.map(coord => coord[1]);
             const longitudes = coordinates.map(coord => coord[0]);
 
-            let newLat, newLng;
+            let newLat, newLng: number;
             newLat = this.Boundary.getRandomInRange(Math.min(...latitudes), Math.max(...latitudes));
             newLng = this.Boundary.getRandomInRange(Math.min(...longitudes), Math.max(...longitudes));
 
             poly = this.Boundary.createRandomPolyline({
-                lat: this.Boundary.getRandomInRange(Math.min(...latitudes), Math.max(...latitudes)),
-                lng: this.Boundary.getRandomInRange(Math.min(...longitudes), Math.max(...longitudes)),
+                lat: newLat,
+                lng: newLng,
             }, numPoints, 1_000);
+            
+            console.log(poly)
 
-            let id = i + 1;
+            
+
+            let id = Math.floor(Math.random() * 1000);
             let row: BotEnemy = new BotEnemy();
-            row.id = id;
+            row.id = id.toString();
+            row.name = "wakwau";
             row.health = 100;
             row.speed = 100;
-            row.position.lat = newLat;
-            row.position.long = newLng;
-            row.movement = Object.assign(new Poly(), {
-                type: 'polyline',
-                poly: poly,
+            row.position.lat = 0;
+            row.position.long = 0;
+            // row.movement = Object.assign(new Poly(), {
+            //     type: 'polyline',
+            //     poly: poly,
+            // });
+            row.movement.type = "Polyline"
+            poly.forEach((coord: number[]) => {
+                const position: IPoly = new IPoly();
+                position.lat = coord[0];
+                position.long = coord[1];
+                row.movement.poly.push(position);
             });
-
+            console.log(row.movement)
             data.push(row);
         }
         return data;

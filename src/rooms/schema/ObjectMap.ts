@@ -10,9 +10,9 @@ export class ObjectMap extends Schema {
     @type('boolean') is_active !: boolean;
     @type('string') properties !: string;
 
-    private minPoint = 1; // Jumlah point/titik di maps
-    private maxPoint = 5; // Jumlah point/titik di maps
-    private totalDataRand = 1000; // Jumlah point/titik di maps
+    private minPoint: number = 1; // Jumlah point/titik di maps
+    private maxPoint: number = 5; // Jumlah point/titik di maps
+    private totalDataRand: number = 1000; // Jumlah point/titik di maps
     private typeObject = ['item', 'explosion', 'wall', 'weather'];
     private Boundary = new Bound();
 
@@ -101,7 +101,7 @@ export class ObjectMap extends Schema {
                     break;
             }
 
-            let id = i + 1;
+            let id = Math.floor(Math.random() * 1000);
             let row: ObjectMap = new ObjectMap();
             row.id = id.toString();
             row.type = randomType;

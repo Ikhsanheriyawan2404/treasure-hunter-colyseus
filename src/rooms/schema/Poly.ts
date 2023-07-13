@@ -1,6 +1,6 @@
 import { Schema, type, ArraySchema } from "@colyseus/schema";
 
-class IPoly extends Schema {
+export class IPoly extends Schema {
     @type("number") lat: number;
     @type("number") long: number;
 }
