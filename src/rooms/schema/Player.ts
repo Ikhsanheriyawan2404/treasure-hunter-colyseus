@@ -56,8 +56,9 @@ export class Player extends Schema {
             this.name = options.name;
             this.email = options.email;
             this.health = 100;
-            this.position.lat = newLat;
-            this.position.long = newLng;
+            // ancol
+            this.position.lat = -6.119809404589656;
+            this.position.long = 106.84858694620581;
         // }
 
     }
@@ -98,9 +99,9 @@ export class Player extends Schema {
         var url = `https://overpass-api.de/api/interpreter?data=[out:json];(node(around:1,${lat},${lng});way(around:1,${lat},${lng});relation(around:1,${lat},${lng}););out;`;
       
         // Panggil API dengan menggunakan Axios
+        let result;
         axios.get(url).then(function(response) {
-            var data = response.data;
-      
+            let data = response.data;
             // Cek jenis lapisan yang ditemukan
             if (data.elements.length > 0) {
                 var firstElement = data.elements[0];
@@ -108,20 +109,22 @@ export class Player extends Schema {
                 
                 // Lakukan sesuatu berdasarkan jenis lapisan yang ditemukan
                 if (layerType === 'node' || layerType === 'way') {
-                    return 'land';
+                    result = 'land';
                 } else if (layerType === 'relation') {
-                    return 'water';
+                    result = 'water';
                 } else {
-                    return 'unknown';
+                    result = 'unknown';
                 }
             } else {
                 console.log('Tidak ada data yang ditemukan di titik tersebut');
-                return 'not found';
+                result = 'not found';
             }
         })
         .catch(function(error) {
             console.log('Error:', error);
         });
+
+        return result;
     }
       
     plotObject() {
