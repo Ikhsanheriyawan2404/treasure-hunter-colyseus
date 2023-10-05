@@ -1,6 +1,11 @@
 import config from "@colyseus/tools";
 import { monitor } from "@colyseus/monitor";
 import { playground } from "@colyseus/playground";
+import AuthController from "./controllers/auth.controller";
+import UserController from "./controllers/user.controller";
+import auth from "./middleware/auth";
+import passport from 'passport';
+import { jwtStrategy } from './config/passport';
 
 /**
  * Import your Room files
@@ -22,9 +27,16 @@ export default config({
          * Bind your custom express routes here:
          * Read more: https://expressjs.com/en/starter/basic-routing.html
          */
-        app.get("/hello_world", (req, res) => {
-            res.send("It's time to kick ass and chew bubblegum!");
-        });
+
+        app.use(passport.initialize());
+        passport.use('jwt', jwtStrategy);
+
+        app.get("/api/users", auth(), UserController.listUser);
+        app.get("/api/users/:id", auth(), UserController.getUser);
+
+        app.post("/api/auth/login", AuthController.login);
+        app.post("/api/auth/logout", AuthController.logout);
+        app.post("/api/auth/register", AuthController.register);
 
         /**
          * Use @colyseus/playground
