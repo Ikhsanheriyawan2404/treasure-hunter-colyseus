@@ -12,8 +12,8 @@ export class ObjectMap extends Schema {
 
     private minPoint: number = 1; // Jumlah point/titik di maps
     private maxPoint: number = 5; // Jumlah point/titik di maps
-    private totalDataRand: number = 1000; // Jumlah point/titik di maps
-    private typeObject = ['item', 'explosion', 'wall', 'weather'];
+    private totalDataRand: number = 600; // Jumlah point/titik di maps
+    private typeObject = ['item', 'explosion', /**'wall', */ 'weather', 'treasure'];
     private Boundary = new Bound();
 
     public createObjectMap(id: string, options: any) {
@@ -27,10 +27,10 @@ export class ObjectMap extends Schema {
     /*
     * Generate data object random di maps
     * type object [Item, Explosion, Wall, Weather]
-    * @return Array<[any]> 
+    * @return Array<[any]>
     **/
     public setRandomObjectMap() {
-        let data: Array<any> = []; 
+        let data: Array<any> = [];
         let properties: string;
         let minPoint = this.minPoint;
         let maxPoint = this.maxPoint;
@@ -56,17 +56,25 @@ export class ObjectMap extends Schema {
                     properties = JSON.stringify(Object.assign(new Circle(), {
                         lat: newLat,
                         long: newLng,
-                        radius: Math.floor(Math.random() * 1000),
+                        radius: Math.floor(Math.random() * 500),
                         speed: Math.floor(Math.random() * 100),
                         health: Math.floor(Math.random() * 100),
                         armor: 0,
+                    }))
+                    break;
+                case "treasure":
+                    properties = JSON.stringify(Object.assign(new Circle(), {
+                        lat: newLat,
+                        long: newLng,
+                        radius: Math.floor(Math.random() * 500),
+                        point: Math.floor(Math.random() * 100),
                     }))
                     break;
                 case "explosion":
                     properties = JSON.stringify(Object.assign(new Circle(), {
                         lat: newLat,
                         long: newLng,
-                        radius: Math.floor(Math.random() * 1000),
+                        radius: Math.floor(Math.random() * 500),
                     }))
                     break;
                 case "wall":
