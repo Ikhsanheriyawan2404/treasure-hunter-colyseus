@@ -20,7 +20,7 @@ export class TreasureHunterRoom extends Room<TreasureHunterState> {
     }));
     // tambahkan pada state
     this.state.world = world;
-    
+
     // Generate random object di map
     const objects = new ObjectMap();
     const allObject: Array<any> = objects.setRandomObjectMap();
@@ -59,6 +59,27 @@ export class TreasureHunterRoom extends Room<TreasureHunterState> {
       this.broadcast('move', data);
     });
 
+    this.onMessage("increasePoint", (client, data) => {
+      const player = this.state.Player.get(data.player_id);
+      player.points += data.points;
+
+      this.broadcast('increasePoint', data);
+    });
+
+    this.onMessage("increaseHealth", (client, data) => {
+      const player = this.state.Player.get(data.player_id);
+      player.health += data.health;
+
+      this.broadcast('increaseHealth', data);
+    });
+
+    this.onMessage("setSpeed", (client, data) => {
+      const player = this.state.Player.get(data.player_id);
+      player.speed = data.speed;
+
+      this.broadcast('setSpeed', data);
+    });
+
     this.onMessage("plot_object", (client, data) => {
       //
     });
@@ -68,7 +89,7 @@ export class TreasureHunterRoom extends Room<TreasureHunterState> {
     // Generate player baru
     const player = this.state.createPlayer(client.sessionId, options);
     this.state.world.countPlayer += 1;
-    
+
     console.log(client.sessionId, "joined!");
     // console.log(this.state.getPlayer(client.sessionId));
     this.broadcast('onJoin', {

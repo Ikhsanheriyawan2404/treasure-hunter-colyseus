@@ -27,7 +27,7 @@ export class BotEnemy extends Schema {
     }
 
     public setBot() {
-        let data: Array<any> = []; 
+        let data: Array<any> = [];
         // let properties: string;
 
         for (let i = 0; i < this.totalDataRand; i++) {
@@ -48,10 +48,7 @@ export class BotEnemy extends Schema {
                 lat: newLat,
                 lng: newLng,
             }, numPoints, 1_000);
-            
-            console.log(poly)
 
-            
 
             let id = Math.floor(Math.random() * 1000);
             let row: BotEnemy = new BotEnemy();

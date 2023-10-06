@@ -12,7 +12,7 @@ export class ObjectMap extends Schema {
 
     private minPoint: number = 1; // Jumlah point/titik di maps
     private maxPoint: number = 5; // Jumlah point/titik di maps
-    private totalDataRand: number = 600; // Jumlah point/titik di maps
+    private totalDataRand: number = 3_000; // Jumlah point/titik di maps
     private typeObject = ['item', 'explosion', /**'wall', */ 'weather', 'treasure'];
     private Boundary = new Bound();
 
@@ -53,29 +53,30 @@ export class ObjectMap extends Schema {
 
             switch (randomType) {
                 case "item":
-                    properties = JSON.stringify(Object.assign(new Circle(), {
+                    properties = JSON.stringify({
                         lat: newLat,
                         long: newLng,
                         radius: Math.floor(Math.random() * 500),
                         speed: Math.floor(Math.random() * 100),
                         health: Math.floor(Math.random() * 100),
                         armor: 0,
-                    }))
+                    })
                     break;
                 case "treasure":
-                    properties = JSON.stringify(Object.assign(new Circle(), {
+                    properties = JSON.stringify({
                         lat: newLat,
                         long: newLng,
                         radius: Math.floor(Math.random() * 500),
                         point: Math.floor(Math.random() * 100),
-                    }))
+                    })
                     break;
                 case "explosion":
-                    properties = JSON.stringify(Object.assign(new Circle(), {
+                    properties = JSON.stringify({
                         lat: newLat,
                         long: newLng,
                         radius: Math.floor(Math.random() * 500),
-                    }))
+                        damage: Math.floor(Math.random() * 100),
+                    })
                     break;
                 case "wall":
 
@@ -86,10 +87,11 @@ export class ObjectMap extends Schema {
                         lng: this.Boundary.getRandomInRange(Math.min(...longitudes), Math.max(...longitudes)),
                     }, numPoints, 1_000);
 
-                    properties = JSON.stringify(Object.assign(new Poly(), {
+                    properties = JSON.stringify({
                         type: 'polyline',
                         poly: poly,
-                    }));
+                        damage: Math.floor(Math.random() * 100),
+                    });
                     break;
                 case "weather":
                     poly = [];
@@ -99,21 +101,25 @@ export class ObjectMap extends Schema {
                         lng: this.Boundary.getRandomInRange(Math.min(...longitudes), Math.max(...longitudes)),
                     }, numPoints, 1_000);
 
-                    properties = JSON.stringify(Object.assign(new Poly(), {
+                    properties = JSON.stringify({
                         type: 'polygon',
                         poly: poly,
-                    }));
+                        damage: Math.floor(Math.random() * 100),
+                    });
                     break;
                 default:
                     console.log("Item not found");
                     break;
             }
 
+            console.log(properties);
+
+
             let id = Math.floor(Math.random() * 1000);
             let row: ObjectMap = new ObjectMap();
             row.id = id.toString();
             row.type = randomType;
-            row.is_active = true;
+            row.is_active = false;
             row.properties = properties;
 
             data.push(row);
