@@ -60,25 +60,61 @@ export class TreasureHunterRoom extends Room<TreasureHunterState> {
     });
 
     this.onMessage("increasePoint", (client, data) => {
-      const player = this.state.Player.get(data.player_id);
+      const player = this.state.getPlayer(data.player_id);
       player.points += data.points;
 
-      this.broadcast('increasePoint', data);
+      this.broadcast('increasePoint', {
+        player_id: data.player_id,
+        points: player.points,
+      });
     });
 
     this.onMessage("increaseHealth", (client, data) => {
-      const player = this.state.Player.get(data.player_id);
+      const player = this.state.getPlayer(data.player_id);
+      console.log(player);
       player.health += data.health;
 
-      this.broadcast('increaseHealth', data);
+      this.broadcast('increaseHealth', {
+        player_id: data.player_id,
+        health: player.health,
+      });
     });
 
-    this.onMessage("setSpeed", (client, data) => {
-      const player = this.state.Player.get(data.player_id);
-      player.speed = data.speed;
+    this.onMessage("decreaseHealth", (client, data) => {
+      const player = this.state.getPlayer(data.player_id);
+      console.log(player);
 
-      this.broadcast('setSpeed', data);
+      player.health -= data.damage;
+
+      this.broadcast('decreaseHealth', {
+        player_id: data.player_id,
+        health: player.health,
+      });
     });
+
+    this.onMessage("increaseSpeed", (client, data) => {
+      const player = this.state.getPlayer(data.player_id);
+      player.speed += data.speed;
+
+      this.broadcast('increaseSpeed', {
+        player_id: data.player_id,
+        speed: player.speed,
+      });
+    });
+
+    this.onMessage("deleteObject", (client, data) => {
+      this.state.ObjectMap.delete(data.id);
+      this.state.world.countItem -= 1;
+
+      this.broadcast('deleteObject', data);
+    });
+
+    this.onMessage("endGame", (client, data) => {
+      this.broadcast('endGame', data);
+      // dispose room
+      this.disconnect();
+    })
+
 
     this.onMessage("plot_object", (client, data) => {
       //

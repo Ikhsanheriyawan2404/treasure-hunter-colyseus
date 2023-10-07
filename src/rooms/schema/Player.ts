@@ -45,17 +45,19 @@ export class Player extends Schema {
         newLng = this.getRandomInRange(Math.min(...longitudes), Math.max(...longitudes));
         let result = this.checkLayerType(newLat, newLng);
         // while (result != 'land') {
-           
+
         //     result = this.checkLayerType(newLat, newLng);
         //     console.log(`Iteration ${iteration}: ${result}`);
         //     iteration++;
         // }
-        
-        // if (result === 'land') { 
+
+        // if (result === 'land') {
             this.id = id;
             this.name = options.name;
             this.email = options.email;
             this.health = 100;
+            this.speed = 100;
+            this.points = 0;
             // ancol
             this.position.lat = -6.119809404589656;
             this.position.long = 106.84858694620581;
@@ -97,7 +99,7 @@ export class Player extends Schema {
     checkLayerType(lat: number, lng: number): any {
         // Buat URL Overpass API dengan kueri untuk memeriksa jenis lapisan di titik tersebut
         var url = `https://overpass-api.de/api/interpreter?data=[out:json];(node(around:1,${lat},${lng});way(around:1,${lat},${lng});relation(around:1,${lat},${lng}););out;`;
-      
+
         // Panggil API dengan menggunakan Axios
         let result;
         axios.get(url).then(function(response) {
@@ -106,7 +108,7 @@ export class Player extends Schema {
             if (data.elements.length > 0) {
                 var firstElement = data.elements[0];
                 var layerType = firstElement.type; // Jenis lapisan (node, way, relation)
-                
+
                 // Lakukan sesuatu berdasarkan jenis lapisan yang ditemukan
                 if (layerType === 'node' || layerType === 'way') {
                     result = 'land';
@@ -126,7 +128,7 @@ export class Player extends Schema {
 
         return result;
     }
-      
+
     plotObject() {
         //
     }

@@ -12,8 +12,8 @@ export class ObjectMap extends Schema {
 
     private minPoint: number = 1; // Jumlah point/titik di maps
     private maxPoint: number = 5; // Jumlah point/titik di maps
-    private totalDataRand: number = 3_000; // Jumlah point/titik di maps
-    private typeObject = ['item', 'explosion', /**'wall', */ 'weather', 'treasure'];
+    private totalDataRand: number = 5_000; // Jumlah point/titik di maps
+    private typeObject = ['item', 'explosion', /**'wall', */ 'weather', 'treasure', 'speed'];
     private Boundary = new Bound();
 
     public createObjectMap(id: string, options: any) {
@@ -52,12 +52,21 @@ export class ObjectMap extends Schema {
             newLng = this.Boundary.getRandomInRange(Math.min(...longitudes), Math.max(...longitudes));
 
             switch (randomType) {
+                case "speed":
+                    properties = JSON.stringify({
+                        lat: newLat,
+                        long: newLng,
+                        radius: Math.floor(Math.random() * 500),
+                        speed: Math.floor(Math.random() * 50),
+                    })
+                    break;
                 case "item":
                     properties = JSON.stringify({
                         lat: newLat,
                         long: newLng,
                         radius: Math.floor(Math.random() * 500),
-                        speed: Math.floor(Math.random() * 100),
+                        // speed: Math.floor(Math.random() * 100),
+                        speed: 0,
                         health: Math.floor(Math.random() * 100),
                         armor: 0,
                     })
@@ -112,10 +121,8 @@ export class ObjectMap extends Schema {
                     break;
             }
 
-            console.log(properties);
-
-
-            let id = Math.floor(Math.random() * 1000);
+            // let id = Math.floor(Math.random() * 5000);
+            let id = i;
             let row: ObjectMap = new ObjectMap();
             row.id = id.toString();
             row.type = randomType;

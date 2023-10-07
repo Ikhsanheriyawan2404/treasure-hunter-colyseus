@@ -15,12 +15,27 @@ model User {
   name       String    @db.VarChar(255)
   email      String    @unique @db.VarChar(255)
   password   String    @db.VarChar(255)
+  points     Int       @default(0)
   created_at DateTime? @default(now()) @db.Timestamp(0)
   updated_at DateTime? @updatedAt @db.Timestamp(0)
   deleted_at DateTime? @db.Timestamp(0)
   Token      Token[]
+  Match      Match[]
 
   @@map("users")
+}
+
+model Match {
+  id         Int       @id @default(autoincrement())
+  room       String    @unique @db.VarChar(255)
+  user_id    Int
+  points     Int
+  created_at DateTime? @default(now()) @db.Timestamp(0)
+  updated_at DateTime? @updatedAt @db.Timestamp(0)
+
+  relation User @relation(fields: [user_id], references: [id])
+
+  @@map("matchs")
 }
 
 model Token {

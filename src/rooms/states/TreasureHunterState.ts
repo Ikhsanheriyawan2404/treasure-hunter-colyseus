@@ -34,7 +34,7 @@ export class TreasureHunterState extends Schema {
 
   @type({ map: Player })
   Player = new MapSchema<Player>();
-  
+
   @type({ map: Message })
   Message = new MapSchema<Message>();
 
@@ -54,12 +54,15 @@ export class TreasureHunterState extends Schema {
     return player;
   }
 
-  getPlayer (id: string) {
+  getPlayer (id: string): Player | undefined  {
+    let foundPlayer: Player | undefined = undefined;
+
     this.Player.forEach((player, key) => {
       if (player.id === id) {
-        return this.Player.get(key);
+        foundPlayer = this.Player.get(key);
       }
     })
+    return foundPlayer;
   }
 
   removePlayer (id: string) {

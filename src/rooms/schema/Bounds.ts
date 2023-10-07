@@ -2,10 +2,10 @@ import axios from "axios";
 
 export class Bound {
 
-   public JakartaBounds: string;
+  public JakartaBounds: string;
 
-   constructor() {
-      this.JakartaBounds = `Jakarta
+  constructor() {
+    this.JakartaBounds = `Jakarta
       1
          106.780009   -6.316392
          106.779998   -6.316287
@@ -2063,92 +2063,92 @@ export class Bound {
          106.780009   -6.316392
       END
       END`;
-   }
+  }
 
-   public getRandomPositionByPolygon(polyData: string) {
-      const lines = polyData.trim().split('\n');
-      const name = lines[0].trim();
-      const coordinates = lines.slice(2, lines.length - 2).map(line => {
-         const [lng, lat] = line.trim().split(/\s+/).map(Number);
-         return [lng, lat];
-      });
+  public getRandomPositionByPolygon(polyData: string) {
+    const lines = polyData.trim().split('\n');
+    const name = lines[0].trim();
+    const coordinates = lines.slice(2, lines.length - 2).map(line => {
+      const [lng, lat] = line.trim().split(/\s+/).map(Number);
+      return [lng, lat];
+    });
 
-      const geojson = {
-         type: 'Feature',
-         properties: {
-            name: name
-         },
-         geometry: {
-            type: 'Polygon',
-            coordinates: [coordinates]
-         }
-      };
-      return geojson;
-   }
+    const geojson = {
+      type: 'Feature',
+      properties: {
+        name: name
+      },
+      geometry: {
+        type: 'Polygon',
+        coordinates: [coordinates]
+      }
+    };
+    return geojson;
+  }
 
-   // Fungsi untuk mendapatkan random number di antara dua nilai
-   public getRandomInRange(min: number, max: number): number {
-      return Math.random() * (max - min) + min;
-   }
+  // Fungsi untuk mendapatkan random number di antara dua nilai
+  public getRandomInRange(min: number, max: number): number {
+    return Math.random() * (max - min) + min;
+  }
 
-   public checkLayerType(lat: number, lng: number): any {
-      // Buat URL Overpass API dengan kueri untuk memeriksa jenis lapisan di titik tersebut
-      var url = `https://overpass-api.de/api/interpreter?data=[out:json];(node(around:1,${lat},${lng});way(around:1,${lat},${lng});relation(around:1,${lat},${lng}););out;`;
-    
-      // Panggil API dengan menggunakan Axios
-      axios.get(url).then(function(response) {
-         var data = response.data;
-   
-         // Cek jenis lapisan yang ditemukan
-         if (data.elements.length > 0) {
-            var firstElement = data.elements[0];
-            var layerType = firstElement.type; // Jenis lapisan (node, way, relation)
-            
-            // Lakukan sesuatu berdasarkan jenis lapisan yang ditemukan
-            if (layerType === 'node' || layerType === 'way') {
-               return 'land';
-            } else if (layerType === 'relation') {
-               return 'water';
-            } else {
-               return 'unknown';
-            }
-         } else {
-            console.log('Tidak ada data yang ditemukan di titik tersebut');
-            return 'not found';
-         }
-      })
-      .catch(function(error) {
-         console.log('Error:', error);
+  public checkLayerType(lat: number, lng: number): any {
+    // Buat URL Overpass API dengan kueri untuk memeriksa jenis lapisan di titik tersebut
+    var url = `https://overpass-api.de/api/interpreter?data=[out:json];(node(around:1,${lat},${lng});way(around:1,${lat},${lng});relation(around:1,${lat},${lng}););out;`;
+
+    // Panggil API dengan menggunakan Axios
+    axios.get(url).then(function (response) {
+      var data = response.data;
+
+      // Cek jenis lapisan yang ditemukan
+      if (data.elements.length > 0) {
+        var firstElement = data.elements[0];
+        var layerType = firstElement.type; // Jenis lapisan (node, way, relation)
+
+        // Lakukan sesuatu berdasarkan jenis lapisan yang ditemukan
+        if (layerType === 'node' || layerType === 'way') {
+          return 'land';
+        } else if (layerType === 'relation') {
+          return 'water';
+        } else {
+          return 'unknown';
+        }
+      } else {
+        console.log('Tidak ada data yang ditemukan di titik tersebut');
+        return 'not found';
+      }
+    })
+      .catch(function (error) {
+        console.log('Error:', error);
       });
   }
 
-   public createRandomPolyline(center: any, numPoints: number, radius: number) {
-      const polylineCoordinates = [];
-      for (let i = 0; i < numPoints; i++) {
-         const angle = this.getRandomInRange(0, 2 * Math.PI);
-         const offsetX = this.getRandomInRange(-radius, radius);
-         const offsetY = this.getRandomInRange(-radius, radius);
-         const lat = center.lat + (offsetY / 111111); // 1 derajat = sekitar 111111 meter
-         const lng = center.lng + (offsetX / (111111 * Math.cos(center.lat * Math.PI / 180))); // Mengkompensasi perubahan jarak garis lintang
+  public createRandomPolyline(center: any, numPoints: number, radius: number) {
+    const polylineCoordinates = [];
+    for (let i = 0; i < numPoints; i++) {
+      const angle = this.getRandomInRange(0, 2 * Math.PI);
+      const offsetX = this.getRandomInRange(-radius, radius);
+      const offsetY = this.getRandomInRange(-radius, radius);
+      const lat = center.lat + (offsetY / 111111); // 1 derajat = sekitar 111111 meter
+      const lng = center.lng + (offsetX / (111111 * Math.cos(center.lat * Math.PI / 180))); // Mengkompensasi perubahan jarak garis lintang
 
-         polylineCoordinates.push([lat, lng]);
-      }
+      polylineCoordinates.push([lat, lng]);
+    }
 
-      return polylineCoordinates;
-   }
+    return polylineCoordinates;
+  }
 
-   public createRandomPolygon(center: any, numPoints: number, radius: number) {
-      const polygonCoordinates = [];
-      for (let i = 0; i < numPoints; i++) {
-         const angle = this.getRandomInRange(0, 2 * Math.PI);
-         const offsetX = this.getRandomInRange(-radius, radius);
-         const offsetY = this.getRandomInRange(-radius, radius);
-         const lat = center.lat + (offsetY / 111111); // 1 derajat = sekitar 111111 meter
-         const lng = center.lng + (offsetX / (111111 * Math.cos(center.lat * Math.PI / 180))); // Mengkompensasi perubahan jarak garis lintang
+  public createRandomPolygon(center: any, numPoints: number, radius: number) {
+    const polygonCoordinates = [];
+    for (let i = 0; i < numPoints; i++) {
+      const angle = this.getRandomInRange(0, 2 * Math.PI);
+      const offsetX = this.getRandomInRange(-radius, radius);
+      const offsetY = this.getRandomInRange(-radius, radius);
+      const lat = center.lat + (offsetY / 111111); // 1 derajat = sekitar 111111 meter
+      const lng = center.lng + (offsetX / (111111 * Math.cos(center.lat * Math.PI / 180))); // Mengkompensasi perubahan jarak garis lintang
 
-         polygonCoordinates.push([lat, lng]);
-      }
+      polygonCoordinates.push([lat, lng]);
+    }
 
-      return polygonCoordinates;
-   }
+    return polygonCoordinates;
+  }
 }
