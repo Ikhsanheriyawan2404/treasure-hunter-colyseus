@@ -12,7 +12,7 @@ export class ObjectMap extends Schema {
 
     private minPoint: number = 1; // Jumlah point/titik di maps
     private maxPoint: number = 5; // Jumlah point/titik di maps
-    private totalDataRand: number = 5_000; // Jumlah point/titik di maps
+    private totalDataRand: number = 500_0; // Jumlah point/titik di maps
     private typeObject = ['item', 'explosion', /**'wall', */ 'weather', 'treasure', 'speed'];
     private Boundary = new Bound();
 
@@ -120,6 +120,8 @@ export class ObjectMap extends Schema {
                     console.log("Item not found");
                     break;
             }
+
+            console.log(properties)
 
             // let id = Math.floor(Math.random() * 5000);
             let id = i;

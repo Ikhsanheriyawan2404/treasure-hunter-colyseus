@@ -137,7 +137,10 @@ export class TreasureHunterRoom extends Room<TreasureHunterState> {
 
   onLeave (client: Client, consented: boolean) {
     let player = this.state.removePlayer(client.sessionId);
-    this.broadcast('onLeave', client.sessionId);
+    this.broadcast('onLeave', {
+      id: client.sessionId,
+      player: player,
+    });
     console.log(client.sessionId, "left!");
     console.log(player)
   }

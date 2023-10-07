@@ -3,6 +3,7 @@ import { monitor } from "@colyseus/monitor";
 import { playground } from "@colyseus/playground";
 import AuthController from "./controllers/auth.controller";
 import UserController from "./controllers/user.controller";
+import MatchController from "./controllers/match.controller";
 import auth from "./middleware/auth";
 import passport from 'passport';
 import { jwtStrategy } from './config/passport';
@@ -32,12 +33,15 @@ export default config({
         passport.use('jwt', jwtStrategy);
 
         app.get("/api/users", auth(), UserController.listUser);
+        app.get("/api/users/ranks", UserController.usersRank);
         app.get("/api/users/:id", auth(), UserController.getUser);
 
         app.post("/api/auth/login", AuthController.login);
-        app.post("/api/auth/logout", AuthController.logout);
+        // app.post("/api/auth/logout", AuthController.logout);
         app.post("/api/auth/register", AuthController.register);
 
+        app.get("/api/matchs", MatchController.listMatch);
+        app.post("/api/end-game/:userId", auth(), MatchController.endGame);
         /**
          * Use @colyseus/playground
          * (It is not recommended to expose this route in a production environment)

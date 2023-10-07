@@ -5,6 +5,7 @@ import axios from "axios";
 
 export class Player extends Schema {
     @type('string') id !: string;
+    @type('number') idReal !: number;
     @type('string') name !: string;
     @type('string') email ?: string;
     @type('number') armor : number = 0;
@@ -53,6 +54,7 @@ export class Player extends Schema {
 
         // if (result === 'land') {
             this.id = id;
+            this.idReal = 0;
             this.name = options.name;
             this.email = options.email;
             this.health = 100;
