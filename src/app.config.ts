@@ -7,6 +7,7 @@ import MatchController from "./controllers/match.controller";
 import auth from "./middleware/auth";
 import passport from 'passport';
 import { jwtStrategy } from './config/passport';
+import cors from 'cors';
 
 /**
  * Import your Room files
@@ -31,6 +32,8 @@ export default config({
 
         app.use(passport.initialize());
         passport.use('jwt', jwtStrategy);
+
+        app.use(cors())
 
         app.get("/api/users", auth(), UserController.listUser);
         app.get("/api/users/ranks", UserController.usersRank);
